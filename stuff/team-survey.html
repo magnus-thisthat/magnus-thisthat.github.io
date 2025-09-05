@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Team Survey Comparison - June vs September 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .note {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .card {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid;
+        }
+
+        .card-green {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+
+        .card-red {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .card-orange {
+            background: #fff7ed;
+            border-color: #f97316;
+        }
+
+        .card-blue {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .text-green { color: #166534; }
+        .text-red { color: #991b1b; }
+        .text-orange { color: #9a3412; }
+        .text-blue { color: #1e40af; }
+
+        .controls {
+            margin: 2rem 0;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .button-active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .button-inactive {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .button-inactive:hover {
+            background: #d1d5db;
+        }
+
+        .period-toggle {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            padding-left: 1rem;
+            margin-left: 1rem;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .info-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .insights {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .insights-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .insight-label {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .dot-green { background: #22c55e; }
+        .dot-yellow { background: #eab308; }
+        .dot-red { background: #ef4444; }
+
+        .category-section {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .category-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .category-header {
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-header:hover {
+            background: #f9fafb;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .category-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .health-change {
+            font-size: 0.875rem;
+        }
+
+        .positive { color: #16a34a; }
+        .negative { color: #dc2626; }
+        .neutral { color: #6b7280; }
+
+        .category-details {
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+        }
+
+        .detail-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .response-label {
+            display: flex;
+            align-items: center;
+        }
+
+        .response-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .discussion-points {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border-left: 4px solid #3b82f6;
+            margin-top: 1rem;
+        }
+
+        .discussion-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .discussion-list {
+            list-style: none;
+            color: #1d4ed8;
+            font-size: 0.875rem;
+        }
+
+        .discussion-list li {
+            margin-bottom: 0.25rem;
+        }
+
+        .final-insights {
+            background: #eff6ff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .final-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+
+        .final-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .final-section {
+            color: #1d4ed8;
+            font-size: 0.875rem;
+        }
+
+        .final-section-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .final-list {
+            list-style: none;
+        }
+
+        .final-list li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .button-group { flex-direction: column; align-items: stretch; }
+            .period-toggle { margin-left: 0; padding-left: 0; border-left: none; padding-top: 0.5rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .final-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">Tech Team Survey Results Comparison</h1>
+            <p class="subtitle">June 2025 (5 team members) vs September 2025 (4 team members)</p>
+            <p class="note">Health Score: Green=2pts, Amber=1pt, Red=0pts (max 100%)</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div id="summary-cards" class="grid grid-4"></div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="button-group">
+                <button id="btn-distribution" class="button button-active">Response Distribution</button>
+                <button id="btn-health" class="button button-inactive">Health Score Comparison</button>
+                
+                <div id="period-controls" class="period-toggle">
+                    <span style="font-weight: 500; color: #6b7280;">Period:</span>
+                    <button id="btn-june" class="button button-inactive">June 2025</button>
+                    <button id="btn-sept" class="button button-active">September 2025</button>
+                </div>
+            </div>
+            
+            <div id="info-banner" class="info-banner">
+                <span id="period-text">Viewing September 2025 results (4 team members)</span>
+                <span style="opacity: 0.75;">Switch periods to see animated changes</span>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-container">
+            <canvas id="survey-chart"></canvas>
+        </div>
+
+        <!-- Quick Insights -->
+        <div id="quick-insights" class="insights"></div>
+
+        <!-- Detailed Breakdown -->
+        <div class="category-section">
+            <h2 class="section-title">Detailed Category Analysis</h2>
+            <div id="category-breakdown"></div>
+        </div>
+
+        <!-- Final Discussion Points -->
+        <div class="final-insights">
+            <h3 class="final-title">Key Discussion Topics:</h3>
+            <div class="final-grid">
+                <div class="final-section">
+                    <p class="final-section-title">Immediate Concerns:</p>
+                    <ul class="final-list">
+                        <li>• Fun: No positive responses - what's affecting team morale?</li>
+                        <li>• Easy to release: New deployment challenges?</li>
+                        <li>• Tech quality: Technical debt or quality issues?</li>
+                    </ul>
+                </div>
+                <div class="final-section">
+                    <p class="final-section-title">Positive Changes:</p>
+                    <ul class="final-list">
+                        <li>• Pawns or players: Better team empowerment</li>
+                        <li>• Suitable process: Process improvements working</li>
+                        <li>• Learning: Slight improvement in development</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Raw survey data
+        const SURVEY_DATA = [
+            { category: "Speed", june: { red: 0, amber: 2, green: 3 }, sept: { red: 0, amber: 2, green: 2 } },
+            { category: "Suitable process", june: { red: 0, amber: 2, green: 3 }, sept: { red: 0, amber: 1, green: 3 } },
+            { category: "Delivering value", june: { red: 0, amber: 3, green: 2 }, sept: { red: 0, amber: 2, green: 2 } },
+            { category: "Easy to release", june: { red: 0, amber: 3, green: 2 }, sept: { red: 1, amber: 0, green: 3 } },
+            { category: "Fun", june: { red: 0, amber: 3, green: 2 }, sept: { red: 0, amber: 4, green: 0 } },
+            { category: "Support", june: { red: 0, amber: 3, green: 2 }, sept: { red: 0, amber: 3, green: 1 } },
+            { category: "Tech quality", june: { red: 0, amber: 4, green: 1 }, sept: { red: 1, amber: 2, green: 1 } },
+            { category: "Mission", june: { red: 0, amber: 4, green: 1 }, sept: { red: 0, amber: 3, green: 1 } },
+            { category: "Learning", june: { red: 1, amber: 3, green: 1 }, sept: { red: 0, amber: 3, green: 1 } },
+            { category: "Pawns or players", june: { red: 2, amber: 1, green: 2 }, sept: { red: 0, amber: 1, green: 3 } }
+        ];
+
+        // Application state
+        const state = {
+            viewMode: 'distribution',
+            selectedPeriod: 'sept',
+            expandedCategories: new Set()
+        };
+
+        let chart = null;
+
+        // Process raw data into percentages and analysis
+        function processData() {
+            return SURVEY_DATA.map(item => {
+                const juneTotal = 5, septTotal = 4;
+                
+                const june = {
+                    red: (item.june.red / juneTotal) * 100,
+                    amber: (item.june.amber / juneTotal) * 100,
+                    green: (item.june.green / juneTotal) * 100
+                };
+                
+                const sept = {
+                    red: (item.sept.red / septTotal) * 100,
+                    amber: (item.sept.amber / septTotal) * 100,
+                    green: (item.sept.green / septTotal) * 100
+                };
+                
+                const juneHealth = ((item.june.green * 2 + item.june.amber) / (juneTotal * 2)) * 100;
+                const septHealth = ((item.sept.green * 2 + item.sept.amber) / (septTotal * 2)) * 100;
+                const healthChange = septHealth - juneHealth;
+                
+                let trend = 'stable';
+                if (healthChange > 10) trend = 'improved';
+                else if (healthChange < -10) trend = 'declined';
+                
+                return {
+                    category: item.category,
+                    rawData: { june: item.june, sept: item.sept },
+                    percentages: { june, sept },
+                    healthScores: { june: juneHealth, sept: septHealth, change: healthChange },
+                    trend
+                };
+            });
+        }
+
+        const processedData = processData();
+
+        // Initialize chart with proper transition setup
+        function initChart() {
+            const ctx = document.getElementById('survey-chart').getContext('2d');
+            
+            // Get initial data for September
+            const labels = processedData.map(item => 
+                item.category.length > 12 ? item.category.substring(0, 12) + '...' : item.category
+            );
+            
+            const initialData = processedData.map(item => item.percentages.sept);
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Red',
+                            data: initialData.map(d => d.red),
+                            backgroundColor: '#ef4444',
+                            borderWidth: 0,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Amber', 
+                            data: initialData.map(d => d.amber),
+                            backgroundColor: '#f59e0b',
+                            borderWidth: 0,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Green',
+                            data: initialData.map(d => d.green),
+                            backgroundColor: '#22c55e',
+                            borderWidth: 0,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0 // Disable initial animation
+                    },
+                    transitions: {
+                        active: {
+                            animation: {
+                                duration: 1500, // Slow transition for visibility
+                                easing: 'easeInOutCubic'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: { maxRotation: 45 }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Response %' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const index = tooltipItems[0].dataIndex;
+                                    const fullName = processedData[index].category;
+                                    const period = state.selectedPeriod === 'june' ? 'June 2025' : 'September 2025';
+                                    const teamSize = state.selectedPeriod === 'june' ? '5 members' : '4 members';
+                                    return `${fullName} - ${period} (${teamSize})`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update chart data with smooth transitions
+        function updateChart() {
+            if (!chart) {
+                initChart();
+                return;
+            }
+
+            if (state.viewMode === 'distribution') {
+                // Update to distribution data
+                const newData = processedData.map(item => 
+                    state.selectedPeriod === 'june' ? item.percentages.june : item.percentages.sept
+                );
+
+                // Check if we need to recreate chart (switching from health view)
+                if (chart.data.datasets.length !== 3 || chart.data.datasets[0].label !== 'Red') {
+                    chart.destroy();
+                    initChart();
+                    return;
+                }
+
+                // Update existing datasets for smooth transition
+                chart.data.datasets[0].data = newData.map(d => d.red);
+                chart.data.datasets[1].data = newData.map(d => d.amber);
+                chart.data.datasets[2].data = newData.map(d => d.green);
+
+                // Ensure stacked configuration
+                chart.options.scales.x.stacked = true;
+                chart.options.scales.y.stacked = true;
+                chart.options.scales.y.title.text = 'Response %';
+
+                // Trigger smooth update
+                chart.update('active');
+
+            } else {
+                // Health score view - recreate chart
+                chart.destroy();
+                
+                const ctx = document.getElementById('survey-chart').getContext('2d');
+                const labels = processedData.map(item => 
+                    item.category.length > 12 ? item.category.substring(0, 12) + '...' : item.category
+                );
+
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'June 2025',
+                                data: processedData.map(item => item.healthScores.june),
+                                backgroundColor: '#86efac'
+                            },
+                            {
+                                label: 'September 2025', 
+                                data: processedData.map(item => item.healthScores.sept),
+                                backgroundColor: '#22c55e'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: false },
+                            y: { 
+                                stacked: false, 
+                                beginAtZero: true, 
+                                max: 100,
+                                title: { display: true, text: 'Health Score %' }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        return processedData[tooltipItems[0].dataIndex].category;
+                                    },
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            updateButtons();
+            updateInfoBanner();
+            updateSummaryCards();
+            updateQuickInsights();
+            updateCategoryBreakdown();
+            updateChart();
+        }
+
+        function updateButtons() {
+            // View mode buttons
+            document.getElementById('btn-distribution').className = 
+                `button ${state.viewMode === 'distribution' ? 'button-active' : 'button-inactive'}`;
+            document.getElementById('btn-health').className = 
+                `button ${state.viewMode === 'healthScore' ? 'button-active' : 'button-inactive'}`;
+
+            // Period buttons
+            document.getElementById('btn-june').className = 
+                `button ${state.selectedPeriod === 'june' ? 'button-active' : 'button-inactive'}`;
+            document.getElementById('btn-sept').className = 
+                `button ${state.selectedPeriod === 'sept' ? 'button-active' : 'button-inactive'}`;
+
+            // Show/hide period controls
+            document.getElementById('period-controls').style.display = 
+                state.viewMode === 'distribution' ? 'flex' : 'none';
+            document.getElementById('info-banner').style.display = 
+                state.viewMode === 'distribution' ? 'flex' : 'none';
+        }
+
+        function updateInfoBanner() {
+            const text = state.selectedPeriod === 'june' 
+                ? 'Viewing June 2025 results (5 team members)'
+                : 'Viewing September 2025 results (4 team members)';
+            document.getElementById('period-text').textContent = text;
+        }
+
+        function updateSummaryCards() {
+            const areasImproved = processedData.filter(item => item.trend === 'improved');
+            const areasDeclined = processedData.filter(item => item.trend === 'declined');
+            const areasWithRed = processedData.filter(item => item.rawData.sept.red > 0);
+
+            document.getElementById('summary-cards').innerHTML = `
+                <div class="card card-green">
+                    <div class="card-title text-green">Improved (${areasImproved.length})</div>
+                    <div>${areasImproved.map(item => item.category).join(', ') || 'None'}</div>
+                </div>
+                <div class="card card-red">
+                    <div class="card-title text-red">Declined (${areasDeclined.length})</div>
+                    <div>${areasDeclined.map(item => item.category).join(', ') || 'None'}</div>
+                </div>
+                <div class="card card-orange">
+                    <div class="card-title text-orange">Has Red Responses (${areasWithRed.length})</div>
+                    <div>${areasWithRed.map(item => item.category).join(', ') || 'None'}</div>
+                </div>
+                <div class="card card-blue">
+                    <div class="card-title text-blue">Team Size Impact</div>
+                    <div>5→4 members may affect response distributions</div>
+                </div>
+            `;
+        }
+
+        function updateQuickInsights() {
+            if (state.viewMode !== 'distribution') {
+                document.getElementById('quick-insights').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('quick-insights').style.display = 'block';
+
+            const currentData = processedData.map(item => ({
+                category: item.category,
+                percentages: state.selectedPeriod === 'june' ? item.percentages.june : item.percentages.sept,
+                rawData: state.selectedPeriod === 'june' ? item.rawData.june : item.rawData.sept
+            }));
+
+            const strongest = currentData.filter(item => item.percentages.green >= 60);
+            const mixed = currentData.filter(item => 
+                item.percentages.green < 60 && item.rawData.red === 0 && item.percentages.amber > 50
+            );
+            const withRed = currentData.filter(item => item.rawData.red > 0);
+
+            const period = state.selectedPeriod === 'june' ? 'June 2025' : 'September 2025';
+            const teamSize = state.selectedPeriod === 'june' ? '5 team members' : '4 team members';
+
+            document.getElementById('quick-insights').innerHTML = `
+                <div class="insights-title">
+                    <span>Quick Insights for ${period}:</span>
+                    <span style="font-size: 0.75rem; font-weight: normal; background: white; padding: 0.25rem 0.75rem; border-radius: 0.25rem;">${teamSize}</span>
+                </div>
+                <div class="grid grid-3">
+                    <div class="insight-card">
+                        <div class="insight-label text-green">
+                            <div class="dot dot-green"></div>
+                            Strongest Areas (60%+ Green):
+                        </div>
+                        <div style="font-size: 0.75rem; color: #374151;">
+                            ${strongest.map(item => item.category).join(', ') || 'None above 60%'}
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-label" style="color: #a16207;">
+                            <div class="dot dot-yellow"></div>
+                            Mixed Areas (Mostly Amber):
+                        </div>
+                        <div style="font-size: 0.75rem; color: #374151;">
+                            ${mixed.map(item => item.category).join(', ') || 'None'}
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-label text-red">
+                            <div class="dot dot-red"></div>
+                            Areas with Red Responses:
+                        </div>
+                        <div style="font-size: 0.75rem; color: #374151;">
+                            ${withRed.map(item => item.category).join(', ') || 'None'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCategoryBreakdown() {
+            const breakdown = processedData.map(item => {
+                const isExpanded = state.expandedCategories.has(item.category);
+                const trendClass = item.trend === 'improved' ? 'positive' : 
+                                 item.trend === 'declined' ? 'negative' : 'neutral';
+                
+                const hasDiscussion = Math.abs(item.healthScores.change) > 5 || 
+                                    (item.rawData.sept.red > 0 && item.rawData.june.red === 0);
+
+                return `
+                    <div class="category-item">
+                        <div class="category-header" onclick="toggleCategory('${item.category}')">
+                            <div class="category-info">
+                                <h3>${item.category}</h3>
+                                ${item.rawData.sept.red > 0 ? '<span style="color: #f97316;">⚠️</span>' : ''}
+                            </div>
+                            <div class="category-stats">
+                                <span class="health-change">
+                                    Health: ${item.healthScores.june.toFixed(1)}% → ${item.healthScores.sept.toFixed(1)}%
+                                    <span class="${trendClass}">
+                                        (${item.healthScores.change > 0 ? '+' : ''}${item.healthScores.change.toFixed(1)}%)
+                                    </span>
+                                </span>
+                                <span>${isExpanded ? '▼' : '▶'}</span>
+                            </div>
+                        </div>
+                        ${isExpanded ? `
+                            <div class="category-details">
+                                <div class="detail-grid">
+                                    <div class="detail-section">
+                                        <div class="detail-title">June 2025 (5 responses)</div>
+                                        <div class="response-item">
+                                            <div class="response-label">
+                                                <div class="response-dot" style="background: #ef4444;"></div>
+                                                Red:
+                                            </div>
+                                            <span>${item.rawData.june.red} (${item.percentages.june.red.toFixed(1)}%)</span>
+                                        </div>
+                                        <div class="response-item">
+                                            <div class="response-label">
+                                                <div class="response-dot" style="background: #eab308;"></div>
+                                                Amber:
+                                            </div>
+                                            <span>${item.rawData.june.amber} (${item.percentages.june.amber.toFixed(1)}%)</span>
+                                        </div>
+                                        <div class="response-item">
+                                            <div class="response-label">
+                                                <div class="response-dot" style="background: #22c55e;"></div>
+                                                Green:
+                                            </div>
+                                            <span>${item.rawData.june.green} (${item.percentages.june.green.toFixed(1)}%)</span>
+                                        </div>
+                                        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                                            <strong>Health Score: ${item.healthScores.june.toFixed(1)}%</strong>
+                                        </div>
+                                    </div>
+                                    <div class="detail-section">
+                                        <div class="detail-title">September 2025 (4 responses)</div>
+                                        <div class="response-item">
+                                            <div class="response-label">
+                                                <div class="response-dot" style="background: #ef4444;"></div>
+                                                Red:
+                                            </div>
+                                            <span>${item.rawData.sept.red} (${item.percentages.sept.red.toFixed(1)}%)</span>
+                                        </div>
+                                        <div class="response-item">
+                                            <div class="response-label">
+                                                <div class="response-dot" style="background: #eab308;"></div>
+                                                Amber:
+                                            </div>
+                                            <span>${item.rawData.sept.amber} (${item.percentages.sept.amber.toFixed(1)}%)</span>
+                                        </div>
+                                        <div class="response-item">
+                                            <div class="response-label">
+                                                <div class="response-dot" style="background: #22c55e;"></div>
+                                                Green:
+                                            </div>
+                                            <span>${item.rawData.sept.green} (${item.percentages.sept.green.toFixed(1)}%)</span>
+                                        </div>
+                                        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                                            <strong>Health Score: ${item.healthScores.sept.toFixed(1)}%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${hasDiscussion ? `
+                                    <div class="discussion-points">
+                                        <div class="discussion-title">Discussion Points:</div>
+                                        <ul class="discussion-list">
+                                            ${item.rawData.sept.red > 0 && item.rawData.june.red === 0 ? 
+                                                '<li>• New red responses appeared - what specific issues emerged?</li>' : ''}
+                                            ${item.healthScores.change < -10 ? 
+                                                '<li>• Significant decline in overall health - what changed since June?</li>' : ''}
+                                            ${item.healthScores.change > 10 ? 
+                                                '<li>• Notable improvement - what practices or changes contributed to this?</li>' : ''}
+                                            ${item.category === 'Fun' && item.rawData.sept.green === 0 ? 
+                                                '<li>• Complete loss of positive responses - team morale needs attention</li>' : ''}
+                                            ${item.category === 'Easy to release' && item.rawData.sept.red > 0 ? 
+                                                '<li>• Release process challenges - are there new deployment blockers?</li>' : ''}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('category-breakdown').innerHTML = breakdown;
+        }
+
+        // Event handlers
+        function toggleCategory(category) {
+            if (state.expandedCategories.has(category)) {
+                state.expandedCategories.delete(category);
+            } else {
+                state.expandedCategories.add(category);
+            }
+            updateCategoryBreakdown();
+        }
+
+        // Initialize event listeners
+        document.getElementById('btn-distribution').onclick = () => {
+            state.viewMode = 'distribution';
+            updateUI();
+        };
+
+        document.getElementById('btn-health').onclick = () => {
+            state.viewMode = 'healthScore';
+            updateUI();
+        };
+
+        document.getElementById('btn-june').onclick = () => {
+            state.selectedPeriod = 'june';
+            updateUI();
+        };
+
+        document.getElementById('btn-sept').onclick = () => {
+            state.selectedPeriod = 'sept';
+            updateUI();
+        };
+
+        // Initialize the application
+        updateUI();
+    </script>
+</body>
+</html>
